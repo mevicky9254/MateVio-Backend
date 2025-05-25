@@ -35,7 +35,7 @@
 ```
 matevio/
 │
-├── backend/
+├── matevio-backend/
 │   ├── controllers/
 │   ├── models/
 │   ├── routes/
@@ -44,11 +44,6 @@ matevio/
 │   ├── utils/
 │   ├── .env
 │   └── server.js
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── vite.config.js or webpack.config.js
 │
 ├── .gitignore
 ├── README.md
@@ -126,9 +121,9 @@ Matevio's upcoming AI features will:
 
 ---
 
-## 📸 Screenshots (Optional)
+## 📸 Screenshots
 
-_Add frontend screenshots here after UI is developed._
+_Will add soon._
 
 ---
 
