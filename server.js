@@ -6,7 +6,7 @@ import app from './app.js';
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-// connectDB();
+connectDB();
 
 app.listen(PORT, () => {
   console.log(`🚀 Matevio backend running on port ${PORT}`);
