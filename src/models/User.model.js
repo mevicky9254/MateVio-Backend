@@ -1,78 +1,147 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
 
-const userSchema = new Schema({
-
-    username:{
+const preferencesSchema = new Schema({
+    budget:{
+        type: Number,
+        required: true
+    },
+    genderPreference: {
         type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        index: true
+        enum: ['male', 'female', 'other'] 
     },
-
-    email : {
+    ageRange: {
+        type: [Number],
+        validate: {
+            validator: function(v) {
+                return v.length === 2 && v[0] < v[1];
+            } 
+        },
+        required: true
+    },
+    state:{
         type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true
+        required: true
     },
-
-    fullName : {
+    city: {
         type: String,
-        required: true,
-        trim: true,
-        index: true
+        required: true
     },
-
-    avatar : {
-        type: String, //cloudinaryurl
-        required: true,
+    country: {
+        type: String,
+        required: true  
     },
-
-    coverImage : {
-        type: String, //cloudinaryurl
-        required: true,
+    area: {
+        type: String,
+        required: true
     },
-
-    watchHistory:[{
-         type: Schema.Types.ObjectId,
-         ref: "Video"
-    }],
-
-    password:{
-         type: String,
-         required:[true, "Password is required"]
+    smokingPreference: {
+        type: String,
+        enum: ['smoker', 'non-smoker', 'any'],
+        default: 'any'
     },
-
-    refreshToken:{
-         type: String,
+    drinkingPreference: {
+        type: String,
+        enum: ['drinker', 'non-drinker', 'any'],
+        default: 'any'
+    },
+    petsPreference: {
+        type: String,
+        enum: ['pet-friendly', 'no-pets', 'any'],
+        default: 'any'
+    },
+   
+    cleanliness: {
+        type: String,
+        enum: ['low', 'medium', 'high']
+    },
+    
+    wakeupTime:{
+        type: String,
+        required: true
+    },
+    sleepTime: {
+        type: String,
+        required: true
+    },
+    cookingPreference: {
+        type: String,
+        enum: ['cook', 'no-cook', 'any'],
+        default: 'any'
     }
+}, { _id: false });
+
+const userSchema = new Schema({
+    name: { 
+        type: String, 
+        required: true, 
+        trim: true
+     },
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true, 
+        lowercase: true 
+    },
+    mobile: { 
+        type: String, 
+        required: true,
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /\d{10}/.test(v); // Validates a 10-digit number
+            },
+            message: props => `${props.value} is not a valid mobile number!`
+        }
+    },
+    password: { 
+        type: String, 
+        required: true, 
+        minlength: 6 
+    },
+    gender: { 
+        type: String, 
+        enum: ['male', 'female', 'other'] 
+    },
+    university:{
+        type: String,
+        required: false
+    },
+    organization: {
+        type: String,
+        required: false
+    },
+    preferences: preferencesSchema,
+    bio: {
+        type: String,
+        maxlength: 500,
+        required: false
+    },
+    avatar: {
+        type: String,
+        required: false
+    },
+    matches: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+}, { timestamps: true });
 
 
-}, {
-    timestamps: true
-})
+userSchema.pre("save", async function (next) {
 
-userSchema.pre("save" , async function(next){
+    if (!this.isModified("password")) return next();
 
-  if(!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10);
 
-  this.password = await bcrypt.hash(this.password, 10);
-  
-  next();
+    next();
 });
 
-userSchema.methods.isPasswordCorrect = async function(password){
-   return await bcrypt.compare(password, this.password)
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password)
 }
 
-userSchema.methods.generateAccessToken =  function () {
+userSchema.methods.generateAccessToken = function () {
 
     return jwt.sign(
         {
@@ -89,7 +158,7 @@ userSchema.methods.generateAccessToken =  function () {
 }
 
 
-userSchema.methods.generateRefreshToken =  function () {
+userSchema.methods.generateRefreshToken = function () {
 
     return jwt.sign(
         {
