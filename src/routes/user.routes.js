@@ -6,6 +6,10 @@ import { JwtValidate } from "../middlewares/auth.middleware.js";
 
 
 const router = Router();
+//test route
+router.get("/test", (req, res) => {
+    res.json({message: "User route is working"});
+});
 
 router.route("/register").post(
     
@@ -24,5 +28,6 @@ router.route("/current-user").get(JwtValidate, getCurrentUser);
 router.route("/update-avatar").put(JwtValidate, upload.single("avatar"), updateAvatar);
 router.route("/update-user").put(JwtValidate, updateUser);
 router.route("/change-password").put(JwtValidate, changePassword);
+
 
 export default router;
