@@ -61,11 +61,11 @@ const preferencesSchema = new Schema({
     
     wakeupTime:{
         type: String,
-        required: true
+        required: false
     },
     sleepTime: {
         type: String,
-        required: true
+        required: false
     },
     cookingPreference: {
         type: String,
